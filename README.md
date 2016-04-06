@@ -12,6 +12,7 @@ things like validation struct tags.
 ## Install
 
 * [protobuf version 3](https://github.com/google/protobuf)
+
   For OS X:
   
   ```
@@ -19,7 +20,7 @@ things like validation struct tags.
   ```
 * go support for protobuf: `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
 
-* use `go get github.com/favadi/protoc-go-inject-tag` or download the
+*  `go get github.com/favadi/protoc-go-inject-tag` or download the
   binaries from releases page.
 
 ## Usage
