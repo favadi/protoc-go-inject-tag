@@ -58,7 +58,7 @@ func parseFile(inputPath string) (areas []textArea, err error) {
 		for _, field := range structDecl.Fields.List {
 			// skip if field has no doc
 			if field.Doc == nil {
-				break
+				continue
 			}
 			for _, comment := range field.Doc.List {
 				tag := tagFromComment(comment.Text)
