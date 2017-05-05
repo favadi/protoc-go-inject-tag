@@ -100,6 +100,8 @@ func writeFile(inputPath string, areas []textArea) (err error) {
 		return
 	}
 
-	log.Printf("file %q is injected with custom tags", inputPath)
+	if len(areas) > 0 {
+		log.Printf("file %q is injected with custom tags", inputPath)
+	}
 	return
 }
