@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	rComment = regexp.MustCompile(`^//\s*@inject_tag:\s*(?P<tag>\S+)$`)
+	rComment = regexp.MustCompile(`^//\s*@inject_tag:\s*(\S+)$`)
 	rInject  = regexp.MustCompile("`$")
 )
 
