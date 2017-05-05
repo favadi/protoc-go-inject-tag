@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	rComment = regexp.MustCompile(`^//\s*@inject_tag:\s*(?P<tag>.*)$`)
+	rComment = regexp.MustCompile(`^//\s*@inject_tag:\s*(?P<tag>\S+)$`)
 	rInject  = regexp.MustCompile("`$")
 )
 
@@ -62,6 +62,9 @@ func parseFile(inputPath string) (areas []textArea, err error) {
 			}
 			for _, comment := range field.Doc.List {
 				tag := tagFromComment(comment.Text)
+				if tag == "" {
+					continue
+				}
 				area := textArea{
 					Start: int(field.Pos()),
 					End:   int(field.End()),
