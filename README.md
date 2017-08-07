@@ -41,7 +41,7 @@ package pb;
 
 //@inject_beego_orm_table "my_ip_table"
 message IP {
-  // @inject_tag: valid:"ip"
+  // @inject_tag: orm:"column(address)"
   string Address = 1;
 }
 ```
@@ -61,8 +61,8 @@ The custom tags will be injected to `test.pb.go`.
 
 ```
 type IP struct {
-	// @inject_tag: valid:"ip"
-	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" valid:"ip"`
+	// @inject_tag: orm:"column(address)"
+	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" orm:"column(address)"`
 }
 
 ...
