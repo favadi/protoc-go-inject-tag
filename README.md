@@ -39,7 +39,7 @@ syntax = "proto3";
 
 package pb;
 
-//@inject_beego_orm_table "my_ip_table"
+// @inject_beego_orm_table: "my_ip_table"
 message IP {
   // @inject_tag: orm:"column(address)"
   string Address = 1;
@@ -60,6 +60,28 @@ protoc-go-inject-tag -input=./test.pb.go
 The custom tags will be injected to `test.pb.go`.
 
 ```
+// @inject_beego_orm_table: "my_ip_table"
+message IP {
+  // @inject_tag: orm:"column(address)"
+  string Address = 1;
+}
+```
+Generate with protoc command as normal.
+
+```
+protoc --go_out=. test.proto
+```
+
+Run `protoc-go-inject-tag` with generated file `test.pb.go`.
+
+```
+protoc-go-inject-tag -input=./test.pb.go
+```
+
+The custom tags will be injected to `test.pb.go`.
+
+```
+/ @inject_beego_orm_table: "my_ip_table"
 type IP struct {
 	// @inject_tag: orm:"column(address)"
 	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" orm:"column(address)"`
