@@ -10,24 +10,26 @@ Golang [protobuf](https://github.com/golang/protobuf) doesn't support
 script injects custom tags to generated protobuf files, useful for
 things like validation struct tags.
 
+This repo is based on favadi/protoc-go-inject-tag, but add @inject_beego_orm_table instruction for beego/orm users.
+
 ## Install
 
 * [protobuf version 3](https://github.com/google/protobuf)
 
   For OS X:
-  
+
   ```
   brew install --devel protobuf
   ```
 * go support for protobuf: `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
 
-*  `go get github.com/favadi/protoc-go-inject-tag` or download the
+*  `go get github.com/stormgbs/protoc-go-inject-tag` or download the
   binaries from releases page.
 
 ## Usage
 
-Add a comment with syntax `// @inject_tag: custom_tag:"custom_value"`
-before fields to add custom tag to in .proto files.
+Add a comment with syntax `// @inject_tag: custom_tag:"custom_value"`before fields to add custom tag,
+or a comment with syntax `// @inject_beego_orm_table: "custom_table_name"` before message in .proto files
 
 Example:
 
@@ -37,12 +39,12 @@ syntax = "proto3";
 
 package pb;
 
+//@inject_beego_orm_table "my_ip_table"
 message IP {
   // @inject_tag: valid:"ip"
   string Address = 1;
 }
 ```
-
 Generate with protoc command as normal.
 
 ```
@@ -62,4 +64,11 @@ type IP struct {
 	// @inject_tag: valid:"ip"
 	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" valid:"ip"`
 }
+
+...
+
+func (_ *IP) TableName() string {
+    return "my_ip_table"
+}
+
 ```
