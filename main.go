@@ -16,11 +16,11 @@ func main() {
 		log.Fatal("input file is mandatory")
 	}
 
-	areas, err := parseFile(inputFile)
+	areas, beegoOrmTbls, err := parseFile(inputFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err = writeFile(inputFile, areas); err != nil {
+	if err = writeFile(inputFile, areas, beegoOrmTbls); err != nil {
 		log.Fatal(err)
 	}
 }

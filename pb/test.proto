@@ -2,11 +2,13 @@ syntax = "proto3";
 
 package pb;
 
+// @inject_beego_orm_table: "ip"
 message IP {
-  // @inject_tag: valid:"ip" yaml:"ip"
+  // @inject_tag: orm:"address"
   string Address = 1;
 }
 
+// @inject_beego_orm_table: "url"
 message URL {
   // @inject_tag: valid:"http|https"
   string scheme = 1;
