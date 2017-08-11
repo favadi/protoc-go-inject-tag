@@ -2,17 +2,20 @@ syntax = "proto3";
 
 package pb;
 
-// @inject_beego_orm_table: "ip"
-message IP {
-  // @inject_tag: orm:"address"
-  string Address = 1;
+// @inject_go_interface: "eventer" 1
+// @inject_beego_orm_table: "event_foo"
+message EventFoo {
+  // @inject_tag: orm:"pk"
+  string id = 1;
 }
 
-// @inject_beego_orm_table: "url"
-message URL {
-  // @inject_tag: valid:"http|https"
-  string scheme = 1;
-  string url = 2;
-  // @inject_tag: valid:"nonzero"
-  int32 port = 3;
+// @inject_go_interface: "eventer" 2
+// @inject_beego_orm_table: "event_bar"
+message EventBar {
+  // @inject_tag: orm:"pk"
+  string id = 1;
+  // @inject_tag: orm:"column(bb)"
+  string bb = 2;
+  // @inject_tag: orm:"column(bc)"
+  int32 bc = 3;
 }

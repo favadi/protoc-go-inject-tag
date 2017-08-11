@@ -60,10 +60,22 @@ protoc-go-inject-tag -input=./test.pb.go
 The custom tags will be injected to `test.pb.go`.
 
 ```
-// @inject_beego_orm_table: "my_ip_table"
-message IP {
-  // @inject_tag: orm:"column(address)"
-  string Address = 1;
+// @inject_go_interface: "eventer" 1
+// @inject_beego_orm_table: "event_foo"
+message EventFoo {
+  // @inject_tag: orm:"pk"
+  string id = 1;
+}
+
+// @inject_go_interface: "eventer" 2
+// @inject_beego_orm_table: "event_bar"
+message EventBar {
+  // @inject_tag: orm:"pk"
+  string id = 1;
+  // @inject_tag: orm:"column(bb)"
+  string bb = 2;
+  // @inject_tag: orm:"column(bc)"
+  int32 bc = 3;
 }
 ```
 Generate with protoc command as normal.
@@ -81,16 +93,40 @@ protoc-go-inject-tag -input=./test.pb.go
 The custom tags will be injected to `test.pb.go`.
 
 ```
-/ @inject_beego_orm_table: "my_ip_table"
-type IP struct {
-	// @inject_tag: orm:"column(address)"
-	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" orm:"column(address)"`
+// @inject_go_interface: "eventer" 1
+// @inject_beego_orm_table: "event_foo"
+type EventFoo struct {
+	// @inject_tag: orm:"pk"
+	Id string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty" orm:"pk"`
 }
 
-...
-
-func (_ *IP) TableName() string {
-    return "my_ip_table"
+// @inject_go_interface: "eventer" 2
+// @inject_beego_orm_table: "event_bar"
+type EventBar struct {
+	// @inject_tag: orm:"pk"
+	Id string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty" orm:"pk"`
+	// @inject_tag: orm:"column(bb)"
+	Bb string `protobuf:"bytes,2,opt,name=bb" json:"bb,omitempty" orm:"column(bb)"`
+	// @inject_tag: orm:"column(bc)"
+	Bc int32 `protobuf:"varint,3,opt,name=bc" json:"bc,omitempty" orm:"column(bc)"`
 }
+
+... ...
+
+func (_ *EventFoo) TableName() string {
+	return "event_foo"
+}
+
+func (_ *EventBar) TableName() string {
+	return "event_bar"
+}
+
+type Eventer interface {
+	EventerFunc()
+}
+
+func (_ *EventFoo) EventerFunc() {}
+
+func (_ *EventBar) EventerFunc() {}
 
 ```
