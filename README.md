@@ -10,7 +10,9 @@ Golang [protobuf](https://github.com/golang/protobuf) doesn't support
 script injects custom tags to generated protobuf files, useful for
 things like validation struct tags.
 
-This repo is based on favadi/protoc-go-inject-tag, but add @inject_beego_orm_table instruction for beego/orm users.
+This repo is based on favadi/protoc-go-inject-tag, but add two new instructions:  
+1. @inject_go_interface for some messages.  
+2. @inject_beego_orm_table instruction for beego/orm users.  
 
 ## Install
 
