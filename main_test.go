@@ -23,6 +23,7 @@ func TestTagFromComment(t *testing.T) {
 		{comment: `// fdsafsa`, tag: ""},
 		{comment: `//@inject_tag:`, tag: ""},
 		{comment: `// @inject_tag: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+		{comment: `//@inject_tag: form:"type" validate:"min=0,max=3"`, tag: `form:"type" validate:"min=0,max=3"`},
 	}
 	for _, test := range tests {
 		result := tagFromComment(test.comment)
@@ -39,8 +40,8 @@ func TestParseWriteFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(areas) != 3 {
-		t.Fatalf("expected 3 area to replace, got: %d", len(areas))
+	if len(areas) != 4 {
+		t.Fatalf("expected 4 area to replace, got: %d", len(areas))
 	}
 	area := areas[0]
 	t.Logf("area: %v", area)
@@ -75,14 +76,17 @@ func TestParseWriteFile(t *testing.T) {
 }
 
 func TestContinueParsingWhenSkippingFields(t *testing.T) {
-	expectedTags := []string{`valid:"ip" yaml:"ip"`, `valid:"http|https"`, `valid:"nonzero"`}
+	expectedTags := []string{`valid:"ip" yaml:"ip"`,
+		`valid:"http|https"`,
+		`valid:"nonzero"`,
+		`form:"type" validate:"min=0,max=3"`}
 
 	areas, err := parseFile(testInputFile)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(areas) != 3 {
-		t.Fatalf("expected 3 areas to replace, got: %d", len(areas))
+	if len(areas) != 4 {
+		t.Fatalf("expected 4 areas to replace, got: %d", len(areas))
 	}
 
 	for i, a := range areas {
