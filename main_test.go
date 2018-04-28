@@ -44,8 +44,8 @@ func TestParseWriteFile(t *testing.T) {
 	}
 	area := areas[0]
 	t.Logf("area: %v", area)
-	if area.Tag != expectedTag {
-		t.Errorf("expected tag: %q, got: %q", expectedTag, area.Tag)
+	if area.InjectTag != expectedTag {
+		t.Errorf("expected tag: %q, got: %q", expectedTag, area.InjectTag)
 	}
 
 	// make a copy of test file
@@ -86,8 +86,8 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	}
 
 	for i, a := range areas {
-		if a.Tag != expectedTags[i] {
-			t.Errorf("expected tag: %q, got: %q", expectedTags[i], a.Tag)
+		if a.InjectTag != expectedTags[i] {
+			t.Errorf("expected tag: %q, got: %q", expectedTags[i], a.InjectTag)
 		}
 	}
 
