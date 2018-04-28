@@ -29,7 +29,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type IP struct {
-	// @inject_tag: valid:"ip" yaml:"ip"
+	// @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
 	Address string `protobuf:"bytes,1,opt,name=Address" json:"Address,omitempty"`
 }
 

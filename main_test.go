@@ -33,7 +33,7 @@ func TestTagFromComment(t *testing.T) {
 }
 
 func TestParseWriteFile(t *testing.T) {
-	expectedTag := `valid:"ip" yaml:"ip"`
+	expectedTag := `valid:"ip" yaml:"ip" json:"overrided"`
 
 	areas, err := parseFile(testInputFile)
 	if err != nil {
@@ -67,7 +67,7 @@ func TestParseWriteFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expectedExpr := "Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"Address,omitempty\" valid:\"ip\" yaml:\"ip\"`"
+	expectedExpr := "Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`"
 	if !strings.Contains(string(contents), expectedExpr) {
 		t.Error("file doesn't contains custom tag after writing")
 		t.Log(string(contents))
@@ -75,7 +75,7 @@ func TestParseWriteFile(t *testing.T) {
 }
 
 func TestContinueParsingWhenSkippingFields(t *testing.T) {
-	expectedTags := []string{`valid:"ip" yaml:"ip"`, `valid:"http|https"`, `valid:"nonzero"`}
+	expectedTags := []string{`valid:"ip" yaml:"ip" json:"overrided"`, `valid:"http|https"`, `valid:"nonzero"`}
 
 	areas, err := parseFile(testInputFile)
 	if err != nil {
@@ -112,7 +112,7 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	}
 
 	expectedExprs := []string{
-		"Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"Address,omitempty\" valid:\"ip\" yaml:\"ip\"`",
+		"Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
 		"Scheme string `protobuf:\"bytes,1,opt,name=scheme\" json:\"scheme,omitempty\" valid:\"http|https\"`",
 		"Port int32 `protobuf:\"varint,3,opt,name=port\" json:\"port,omitempty\" valid:\"nonzero\"`",
 	}
