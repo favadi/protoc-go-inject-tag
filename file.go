@@ -12,13 +12,14 @@ import (
 
 var (
 	rComment = regexp.MustCompile(`^//\s*@inject_tag:\s*(.*)$`)
-	rInject  = regexp.MustCompile("`$")
+	rInject  = regexp.MustCompile("`.+`$")
 )
 
 type textArea struct {
-	Start int
-	End   int
-	Tag   string
+	Start      int
+	End        int
+	CurrentTag string
+	InjectTag  string
 }
 
 func parseFile(inputPath string) (areas []textArea, err error) {
@@ -65,10 +66,12 @@ func parseFile(inputPath string) (areas []textArea, err error) {
 				if tag == "" {
 					continue
 				}
+				currentTag := field.Tag.Value
 				area := textArea{
-					Start: int(field.Pos()),
-					End:   int(field.End()),
-					Tag:   tag,
+					Start:      int(field.Pos()),
+					End:        int(field.End()),
+					CurrentTag: currentTag[1 : len(currentTag)-1],
+					InjectTag:  tag,
 				}
 				areas = append(areas, area)
 			}
@@ -96,7 +99,7 @@ func writeFile(inputPath string, areas []textArea) (err error) {
 	// inject custom tags from tail of file first to preserve order
 	for i := range areas {
 		area := areas[len(areas)-i-1]
-		log.Printf("inject custom tag %q to expression %q", area.Tag, string(contents[area.Start-1:area.End-1]))
+		log.Printf("inject custom tag %q to expression %q", area.InjectTag, string(contents[area.Start-1:area.End-1]))
 		contents = injectTag(contents, area)
 	}
 	if err = ioutil.WriteFile(inputPath, contents, 0644); err != nil {

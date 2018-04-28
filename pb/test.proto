@@ -3,7 +3,7 @@ syntax = "proto3";
 package pb;
 
 message IP {
-  // @inject_tag: valid:"ip" yaml:"ip"
+  // @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
   string Address = 1;
 }
 
