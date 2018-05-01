@@ -13,6 +13,7 @@ import (
 var (
 	rComment = regexp.MustCompile(`^//\s*@inject_tag:\s*(.*)$`)
 	rInject  = regexp.MustCompile("`.+`$")
+	rTags    = regexp.MustCompile(`[\w_]+:"[^"]+"`)
 )
 
 type textArea struct {

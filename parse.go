@@ -50,8 +50,10 @@ func (ti tagItems) override(nti tagItems) tagItems {
 
 func newTagItems(tag string) tagItems {
 	items := []tagItem{}
-	splitted := strings.Split(tag, " ")
+	splitted := rTags.FindAllString(tag, -1)
+
 	for _, t := range splitted {
+		t = strings.Replace(t, " ", "", -1)
 		sepPos := strings.Index(t, ":")
 		items = append(items, tagItem{
 			key:   t[:sepPos],

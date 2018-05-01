@@ -74,6 +74,31 @@ func TestParseWriteFile(t *testing.T) {
 	}
 }
 
+func TestNewTagItems(t *testing.T) {
+	var tests = []struct {
+		tag   string
+		items tagItems
+	}{
+		{
+			tag: `valid:"ip" yaml:"ip, required" json:"overrided"`,
+			items: []tagItem{
+				{key: "valid", value: `"ip"`},
+				{key: "yaml", value: `"ip,required"`},
+				{key: "json", value: `"overrided"`},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		for i, item := range newTagItems(test.tag) {
+			if item.key != test.items[i].key || item.value != test.items[i].value {
+				t.Errorf("wrong tag item for tag %s, expected %v, got: %v",
+					test.tag, test.items[i], item)
+			}
+		}
+	}
+}
+
 func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	expectedTags := []string{`valid:"ip" yaml:"ip" json:"overrided"`, `valid:"http|https"`, `valid:"nonzero"`}
 
