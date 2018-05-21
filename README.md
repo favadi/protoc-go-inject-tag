@@ -18,7 +18,7 @@ things like validation struct tags.
   For OS X:
   
   ```
-  brew install --devel protobuf
+  brew install protobuf
   ```
 * go support for protobuf: `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
 
