@@ -83,8 +83,14 @@ func TestNewTagItems(t *testing.T) {
 			tag: `valid:"ip" yaml:"ip, required" json:"overrided"`,
 			items: []tagItem{
 				{key: "valid", value: `"ip"`},
-				{key: "yaml", value: `"ip,required"`},
+				{key: "yaml", value: `"ip, required"`},
 				{key: "json", value: `"overrided"`},
+			},
+		},
+		{
+			tag: `validate:"omitempty,oneof=a b c d"`,
+			items: []tagItem{
+				{key: "validate", value: `"omitempty,oneof=a b c d"`},
 			},
 		},
 	}
