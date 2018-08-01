@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -8,6 +9,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -23,7 +25,7 @@ type textArea struct {
 	InjectTag  string
 }
 
-func parseFile(inputPath string) (areas []textArea, err error) {
+func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error) {
 	log.Printf("parsing file %q for inject tag comments", inputPath)
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, inputPath, nil, parser.ParseComments)
@@ -57,8 +59,29 @@ func parseFile(inputPath string) (areas []textArea, err error) {
 			continue
 		}
 
+		builder := strings.Builder{}
+		if len(xxxSkip) > 0 {
+			for i, skip := range xxxSkip {
+				builder.WriteString(fmt.Sprintf("%s:\"-\"", skip))
+				if i > 0 {
+					builder.WriteString(",")
+				}
+			}
+		}
+
 		for _, field := range structDecl.Fields.List {
 			// skip if field has no doc
+			name := field.Names[0].Name
+			if len(xxxSkip) > 0 && strings.HasPrefix(name, "XXX") {
+				currentTag := field.Tag.Value
+				area := textArea{
+					Start:      int(field.Pos()),
+					End:        int(field.End()),
+					CurrentTag: currentTag[1 : len(currentTag)-1],
+					InjectTag:  builder.String(),
+				}
+				areas = append(areas, area)
+			}
 			if field.Doc == nil {
 				continue
 			}
