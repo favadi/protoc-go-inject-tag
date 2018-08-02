@@ -64,3 +64,6 @@ type IP struct {
 	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" valid:"ip"`
 }
 ```
+
+To skip the tag for the generated XXX_* fields, use
+`-XXX_skip=yaml,xml` flag.
