@@ -106,13 +106,13 @@ func TestNewTagItems(t *testing.T) {
 }
 
 func TestContinueParsingWhenSkippingFields(t *testing.T) {
-	expectedTags := []string{`valid:"ip" yaml:"ip" json:"overrided"`, `valid:"http|https"`, `valid:"nonzero"`}
+	expectedTags := []string{`valid:"ip" yaml:"ip" json:"overrided"`, `xml:"-"`, `xml:"-"`, `xml:"-"`, `valid:"http|https"`, `valid:"nonzero"`, `xml:"-"`, `xml:"-"`, `xml:"-"`}
 
-	areas, err := parseFile(testInputFile, []string{})
+	areas, err := parseFile(testInputFile, []string{"xml"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(areas) != 3 {
+	if len(areas) != 9 {
 		t.Fatalf("expected 3 areas to replace, got: %d", len(areas))
 	}
 
@@ -144,8 +144,12 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 
 	expectedExprs := []string{
 		"Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
+		"Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
 		"Scheme string `protobuf:\"bytes,1,opt,name=scheme\" json:\"scheme,omitempty\" valid:\"http|https\"`",
 		"Port int32 `protobuf:\"varint,3,opt,name=port\" json:\"port,omitempty\" valid:\"nonzero\"`",
+		"XXX_NoUnkeyedLiteral struct{} `json:\"-\" xml:\"-\"`",
+		"XXX_unrecognized     []byte   `json:\"-\" xml:\"-\"`",
+		"XXX_sizecache        int32    `json:\"-\" xml:\"-\"`",
 	}
 
 	for i, expr := range expectedExprs {
