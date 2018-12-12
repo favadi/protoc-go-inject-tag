@@ -25,8 +25,10 @@ type textArea struct {
 	InjectTag  string
 }
 
-func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error) {
-	log.Printf("parsing file %q for inject tag comments", inputPath)
+func parseFile(inputPath string, xxxSkip []string, verbose bool) (areas []textArea, err error) {
+	if verbose {
+		log.Printf("parsing file %q for inject tag comments", inputPath)
+	}
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, inputPath, nil, parser.ParseComments)
 	if err != nil {
@@ -103,11 +105,13 @@ func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error)
 			}
 		}
 	}
-	log.Printf("parsed file %q, number of fields to inject custom tags: %d", inputPath, len(areas))
+	if verbose {
+		log.Printf("parsed file %q, number of fields to inject custom tags: %d", inputPath, len(areas))
+	}
 	return
 }
 
-func writeFile(inputPath string, areas []textArea) (err error) {
+func writeFile(inputPath string, areas []textArea, verbose bool) (err error) {
 	f, err := os.Open(inputPath)
 	if err != nil {
 		return
@@ -125,14 +129,16 @@ func writeFile(inputPath string, areas []textArea) (err error) {
 	// inject custom tags from tail of file first to preserve order
 	for i := range areas {
 		area := areas[len(areas)-i-1]
-		log.Printf("inject custom tag %q to expression %q", area.InjectTag, string(contents[area.Start-1:area.End-1]))
+		if verbose {
+			log.Printf("inject custom tag %q to expression %q", area.InjectTag, string(contents[area.Start-1:area.End-1]))
+		}
 		contents = injectTag(contents, area)
 	}
 	if err = ioutil.WriteFile(inputPath, contents, 0644); err != nil {
 		return
 	}
 
-	if len(areas) > 0 {
+	if len(areas) > 0 && verbose {
 		log.Printf("file %q is injected with custom tags", inputPath)
 	}
 	return

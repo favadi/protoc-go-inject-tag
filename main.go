@@ -9,8 +9,10 @@ import (
 func main() {
 	var inputFile string
 	var xxxTags string
+	var verbose bool
 	flag.StringVar(&inputFile, "input", "", "path to input file")
 	flag.StringVar(&xxxTags, "XXX_skip", "", "skip tags to inject on XXX fields")
+	flag.BoolVar(&verbose, "verbose", false, "verbose logging")
 
 	flag.Parse()
 
@@ -23,11 +25,11 @@ func main() {
 		log.Fatal("input file is mandatory")
 	}
 
-	areas, err := parseFile(inputFile, xxxSkipSlice)
+	areas, err := parseFile(inputFile, xxxSkipSlice, verbose)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err = writeFile(inputFile, areas); err != nil {
+	if err = writeFile(inputFile, areas, verbose); err != nil {
 		log.Fatal(err)
 	}
 }
