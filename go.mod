@@ -1,5 +1,7 @@
 module github.com/favadi/protoc-go-inject-tag
 
+go 1.14
+
 require (
 	github.com/golang/protobuf v1.1.0
 	golang.org/x/net v0.0.0-20180801234040-f4c29de78a2a // indirect

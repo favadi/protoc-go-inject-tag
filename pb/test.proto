@@ -9,7 +9,9 @@ message IP {
 
 message URL {
   // @inject_tag: valid:"http|https"
+  // @validation: "scheme|schema"
   string scheme = 1;
+  // @validation: "url"
   string url = 2;
   // @inject_tag: valid:"nonzero"
   int32 port = 3;

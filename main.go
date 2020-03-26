@@ -23,11 +23,16 @@ func main() {
 		log.Fatal("input file is mandatory")
 	}
 
-	areas, err := parseFile(inputFile, xxxSkipSlice)
+	injectingTags, validationTags, err := parseFile(inputFile, xxxSkipSlice)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err = writeFile(inputFile, areas); err != nil {
+
+	if err = modifyTags(inputFile, injectingTags); err != nil {
+		log.Fatal(err)
+	}
+
+	if err = addValidateFunctions(inputFile, validationTags); err != nil {
 		log.Fatal(err)
 	}
 }

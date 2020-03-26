@@ -58,7 +58,7 @@ func TestParseWriteFile(t *testing.T) {
 	}
 	defer os.Remove(testInputFileTemp)
 
-	if err = writeFile(testInputFileTemp, areas); err != nil {
+	if err = modifyTags(testInputFileTemp, areas); err != nil {
 		t.Fatal(err)
 	}
 
@@ -132,7 +132,7 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	}
 	defer os.Remove(testInputFileTemp)
 
-	if err = writeFile(testInputFileTemp, areas); err != nil {
+	if err = modifyTags(testInputFileTemp, areas); err != nil {
 		t.Fatal(err)
 	}
 

@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
-func tagFromComment(comment string) (tag string) {
-	match := rComment.FindStringSubmatch(comment)
+func tagFromComment(regex *regexp.Regexp, comment string) (tag string) {
+	match := regex.FindStringSubmatch(comment)
 	if len(match) == 2 {
 		tag = match[1]
 	}
@@ -62,7 +63,7 @@ func newTagItems(tag string) tagItems {
 	return items
 }
 
-func injectTag(contents []byte, area textArea) (injected []byte) {
+func injectTag(contents []byte, area *tagTextArea) (injected []byte) {
 	expr := make([]byte, area.End-area.Start)
 	copy(expr, contents[area.Start-1:area.End-1])
 	cti := newTagItems(area.CurrentTag)
