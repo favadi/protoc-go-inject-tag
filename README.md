@@ -67,3 +67,5 @@ type IP struct {
 
 To skip the tag for the generated XXX_* fields, use
 `-XXX_skip=yaml,xml` flag.
+
+To enable verbose logging, use `-verbose`
