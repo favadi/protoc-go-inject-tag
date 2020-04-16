@@ -11,6 +11,7 @@ func main() {
 	var xxxTags string
 	flag.StringVar(&inputFile, "input", "", "path to input file")
 	flag.StringVar(&xxxTags, "XXX_skip", "", "skip tags to inject on XXX fields")
+	flag.BoolVar(&verbose, "verbose", false, "verbose logging")
 
 	flag.Parse()
 
