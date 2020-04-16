@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 	"testing"
@@ -158,5 +160,20 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 			t.Log(string(contents))
 			break
 		}
+	}
+}
+
+func TestVerbose(t *testing.T) {
+	b := new(bytes.Buffer)
+	log.SetOutput(b)
+	verbose = false
+	logf("test")
+	if len(b.Bytes()) > 0 {
+		t.Errorf("verbose should be off")
+	}
+	verbose = true
+	logf("test")
+	if len(b.Bytes()) == 0 {
+		t.Errorf("verbose should be on")
 	}
 }
