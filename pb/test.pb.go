@@ -22,7 +22,7 @@ const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type IP struct {
 	// @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
-	Address              string   `protobuf:"bytes,1,opt,name=Address,proto3" json:"overrided" valid:"ip" yaml:"ip"`
+	Address              string   `protobuf:"bytes,1,opt,name=Address,proto3" json:"Address,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -62,10 +62,10 @@ func (m *IP) GetAddress() string {
 
 type URL struct {
 	// @inject_tag: valid:"http|https"
-	Scheme string `protobuf:"bytes,1,opt,name=scheme,proto3" json:"scheme,omitempty" valid:"http|https"`
+	Scheme string `protobuf:"bytes,1,opt,name=scheme,proto3" json:"scheme,omitempty"`
 	Url    string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	// @inject_tag: valid:"nonzero"
-	Port                 int32    `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty" valid:"nonzero"`
+	Port                 int32    `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
