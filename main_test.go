@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
+	"regexp"
 	"testing"
 )
 
@@ -69,8 +69,9 @@ func TestParseWriteFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expectedExpr := "Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`"
-	if !strings.Contains(string(contents), expectedExpr) {
+	expectedExpr := "Address[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=Address,proto3\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`"
+	matched, err := regexp.Match(expectedExpr, contents)
+	if err != nil || matched != true {
 		t.Error("file doesn't contains custom tag after writing")
 		t.Log(string(contents))
 	}
@@ -145,17 +146,18 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	}
 
 	expectedExprs := []string{
-		"Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
-		"Address string `protobuf:\"bytes,1,opt,name=Address\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
-		"Scheme string `protobuf:\"bytes,1,opt,name=scheme\" json:\"scheme,omitempty\" valid:\"http|https\"`",
-		"Port int32 `protobuf:\"varint,3,opt,name=port\" json:\"port,omitempty\" valid:\"nonzero\"`",
-		"XXX_NoUnkeyedLiteral struct{} `json:\"-\" xml:\"-\"`",
-		"XXX_unrecognized     []byte   `json:\"-\" xml:\"-\"`",
-		"XXX_sizecache        int32    `json:\"-\" xml:\"-\"`",
+		"Address[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=Address,proto3\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
+		"Address[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=Address,proto3\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
+		"Scheme[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=scheme,proto3\" json:\"scheme,omitempty\" valid:\"http|https\"`",
+		"Port[ \t]+int32[ \t]+`protobuf:\"varint,3,opt,name=port,proto3\" json:\"port,omitempty\" valid:\"nonzero\"`",
+		"XXX_NoUnkeyedLiteral[ \t]+struct{}[ \t]+`json:\"-\" xml:\"-\"`",
+		"XXX_unrecognized[ \t]+[]byte[ \t]+`json:\"-\" xml:\"-\"`",
+		"XXX_sizecache[ \t]+int32[ \t]+`json:\"-\" xml:\"-\"`",
 	}
 
 	for i, expr := range expectedExprs {
-		if !strings.Contains(string(contents), expr) {
+		matched, err := regexp.Match(expr, contents)
+		if err != nil || matched != true {
 			t.Errorf("file doesn't contains custom tag #%d after writing", i+1)
 			t.Log(string(contents))
 			break
