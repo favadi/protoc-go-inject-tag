@@ -8,4 +8,4 @@ script:
   - $GOPATH/bin/goveralls -service=travis-ci
 
 go:
-  - "1.13"
+  - "1.16"
