@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package pb;
+option go_package = "/pb";
 
 message IP {
   // @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
@@ -13,4 +14,28 @@ message URL {
   string url = 2;
   // @inject_tag: valid:"nonzero"
   int32 port = 3;
+}
+
+service StreamService {
+	rpc GetRecords(Params) returns (stream Record) {}
+}
+
+message Params {
+	// @inject_tag: validate:"omitempty"
+	string id = 1;
+}
+
+message Record {
+  // @inject_tag: validate:"omitempty"
+	string id = 1;
+}
+
+message OneOfObject {
+        // @inject_tag: tag:"foo_bar"
+        oneof foo_bar {
+	        // @inject_tag: tag:"foo"
+	        string foo = 1;
+	        // @inject_tag: tag:"bar"
+	        int64 bar = 2;
+        }
 }
