@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	rComment = regexp.MustCompile(`^//\s*@inject_tag:\s*(.*)$`)
+	rComment = regexp.MustCompile(`^//.*?@inject_tag:\s*(.*)$`)
 	rInject  = regexp.MustCompile("`.+`$")
 	rTags    = regexp.MustCompile(`[\w_]+:"[^"]+"`)
 )

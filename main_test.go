@@ -25,6 +25,7 @@ func TestTagFromComment(t *testing.T) {
 		{comment: `// fdsafsa`, tag: ""},
 		{comment: `//@inject_tag:`, tag: ""},
 		{comment: `// @inject_tag: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+		{comment: `// test @inject_tag: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
 	}
 	for _, test := range tests {
 		result := tagFromComment(test.comment)
