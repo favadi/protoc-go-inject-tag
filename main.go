@@ -3,16 +3,17 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
 func main() {
-	var inputFile string
+	var inputFiles string
 	var xxxTags string
-	flag.StringVar(&inputFile, "input", "", "path to input file")
+	flag.StringVar(&inputFiles, "input", "", "pattern to match input file(s)")
 	flag.StringVar(&xxxTags, "XXX_skip", "", "skip tags to inject on XXX fields")
 	flag.BoolVar(&verbose, "verbose", false, "verbose logging")
-
 	flag.Parse()
 
 	var xxxSkipSlice []string
@@ -20,15 +21,45 @@ func main() {
 		xxxSkipSlice = strings.Split(xxxTags, ",")
 	}
 
-	if len(inputFile) == 0 {
-		log.Fatal("input file is mandatory")
+	if len(inputFiles) == 0 {
+		log.Fatal("input file is mandatory, see: -help")
 	}
 
-	areas, err := parseFile(inputFile, xxxSkipSlice)
+	// Note: glob doesn't handle ** (treats as just one *). This will return
+	// files and folders, so we'll have to filter them out.
+	globResults, err := filepath.Glob(inputFiles)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err = writeFile(inputFile, areas); err != nil {
-		log.Fatal(err)
+
+	var matched int
+	for _, path := range globResults {
+		finfo, err := os.Stat(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if finfo.IsDir() {
+			continue
+		}
+
+		// It should end with ".go" at a minimum.
+		if !strings.HasSuffix(strings.ToLower(finfo.Name()), ".go") {
+			continue
+		}
+
+		matched++
+
+		areas, err := parseFile(path, xxxSkipSlice)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err = writeFile(path, areas); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if matched == 0 {
+		log.Fatalf("input %q matched no files, see: -help", inputFiles)
 	}
 }
