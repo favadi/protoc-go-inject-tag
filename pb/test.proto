@@ -3,6 +3,9 @@ syntax = "proto3";
 package pb;
 option go_package = "/pb";
 
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+
 message IP {
   // @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
   string Address = 1;
@@ -28,6 +31,8 @@ message Params {
 message Record {
   // @inject_tag: validate:"omitempty"
 	string id = 1;
+  google.protobuf.Any test_any = 2;
+  google.protobuf.Empty test_empty = 3;
 }
 
 message OneOfObject {
