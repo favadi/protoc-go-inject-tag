@@ -12,7 +12,7 @@ func main() {
 	var inputFiles string
 	var xxxTags string
 	flag.StringVar(&inputFiles, "input", "", "pattern to match input file(s)")
-	flag.StringVar(&xxxTags, "XXX_skip", "", "skip tags to inject on XXX fields")
+	flag.StringVar(&xxxTags, "XXX_skip", "", "tags that should be skipped (applies 'tag:\"-\"') for unknown fields (deprecated since protoc-gen-go v1.4.0)")
 	flag.BoolVar(&verbose, "verbose", false, "verbose logging")
 	flag.Parse()
 
