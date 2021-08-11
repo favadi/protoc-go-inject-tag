@@ -81,7 +81,7 @@ $ protoc-go-inject-tag -input="*.pb.go"
 
 The custom tags will be injected to `test.pb.go`:
 
-```proto
+```go
 type IP struct {
 	// @inject_tag: valid:"ip"
 	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" valid:"ip"`
