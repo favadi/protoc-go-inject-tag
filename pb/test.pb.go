@@ -27,8 +27,7 @@ type IP struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
-	Address string `protobuf:"bytes,1,opt,name=Address,proto3" json:"Address,omitempty"`
+	Address string `protobuf:"bytes,1,opt,name=Address,proto3" json:"Address,omitempty"` // @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
 }
 
 func (x *IP) Reset() {

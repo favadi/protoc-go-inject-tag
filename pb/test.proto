@@ -7,8 +7,7 @@ import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 
 message IP {
-  // @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
-  string Address = 1;
+  string Address = 1; // @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
 }
 
 message URL {
