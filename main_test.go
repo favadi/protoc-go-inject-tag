@@ -115,6 +115,7 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 		`valid:"http|https"`,
 		`valid:"nonzero"`,
 		`validate:"omitempty"`,
+		`xml:"-"`,
 		`validate:"omitempty"`,
 		`tag:"foo_bar"`,
 		`tag:"foo"`,
@@ -164,6 +165,7 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 		"FooBar[ \t]+isOneOfObject_FooBar[ \t]+`protobuf_oneof:\"[^\"]+\" tag:\"foo_bar\"`",
 		"Foo[ \t]+string[ \t]+`protobuf:\"[^\"]+\" tag:\"foo\"`",
 		"Bar[ \t]+int64[ \t]+`protobuf:\"[^\"]+\" tag:\"bar\"`",
+		"XXX_Deprecated[ \t]+string[ \t]+`protobuf:\"[^\"]+\" json:\"XXX__deprecated,omitempty\" xml:\"-\"`",
 	}
 
 	for i, expr := range expectedExprs {
