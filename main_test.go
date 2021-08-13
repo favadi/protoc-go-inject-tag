@@ -42,8 +42,8 @@ func TestParseWriteFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(areas) != 3 {
-		t.Fatalf("expected 3 area to replace, got: %d", len(areas))
+	if len(areas) != 8 {
+		t.Fatalf("expected 8 areas to replace, got: %d", len(areas))
 	}
 	area := areas[0]
 	t.Logf("area: %v", area)
@@ -110,14 +110,25 @@ func TestNewTagItems(t *testing.T) {
 }
 
 func TestContinueParsingWhenSkippingFields(t *testing.T) {
-	expectedTags := []string{`valid:"ip" yaml:"ip" json:"overrided"`, `xml:"-"`, `xml:"-"`, `xml:"-"`, `valid:"http|https"`, `valid:"nonzero"`, `xml:"-"`, `xml:"-"`, `xml:"-"`}
+	expectedTags := []string{
+		`valid:"ip" yaml:"ip" json:"overrided"`,
+		`valid:"http|https"`,
+		`valid:"nonzero"`,
+		`validate:"omitempty"`,
+		`xml:"-"`,
+		`validate:"omitempty"`,
+		`tag:"foo_bar"`,
+		`tag:"foo"`,
+		`tag:"bar"`,
+	}
 
 	areas, err := parseFile(testInputFile, []string{"xml"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(areas) != 9 {
-		t.Fatalf("expected 3 areas to replace, got: %d", len(areas))
+
+	if len(areas) != len(expectedTags) {
+		t.Fatalf("expected %d areas to replace, got: %d", len(expectedTags), len(areas))
 	}
 
 	for i, a := range areas {
@@ -140,20 +151,21 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// check if file contains 3 three custom tags
+	// check if file contains custom tags
 	contents, err = ioutil.ReadFile(testInputFileTemp)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	expectedExprs := []string{
-		"Address[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=Address,proto3\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
-		"Address[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=Address,proto3\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
-		"Scheme[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=scheme,proto3\" json:\"scheme,omitempty\" valid:\"http|https\"`",
-		"Port[ \t]+int32[ \t]+`protobuf:\"varint,3,opt,name=port,proto3\" json:\"port,omitempty\" valid:\"nonzero\"`",
-		"XXX_NoUnkeyedLiteral[ \t]+struct{}[ \t]+`json:\"-\" xml:\"-\"`",
-		"XXX_unrecognized[ \t]+[]byte[ \t]+`json:\"-\" xml:\"-\"`",
-		"XXX_sizecache[ \t]+int32[ \t]+`json:\"-\" xml:\"-\"`",
+		"Address[ \t]+string[ \t]+`protobuf:\"[^\"]+\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
+		"Address[ \t]+string[ \t]+`protobuf:\"[^\"]+\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`",
+		"Scheme[ \t]+string[ \t]+`protobuf:\"[^\"]+\" json:\"scheme,omitempty\" valid:\"http|https\"`",
+		"Port[ \t]+int32[ \t]+`protobuf:\"[^\"]+\" json:\"port,omitempty\" valid:\"nonzero\"`",
+		"FooBar[ \t]+isOneOfObject_FooBar[ \t]+`protobuf_oneof:\"[^\"]+\" tag:\"foo_bar\"`",
+		"Foo[ \t]+string[ \t]+`protobuf:\"[^\"]+\" tag:\"foo\"`",
+		"Bar[ \t]+int64[ \t]+`protobuf:\"[^\"]+\" tag:\"bar\"`",
+		"XXX_Deprecated[ \t]+string[ \t]+`protobuf:\"[^\"]+\" json:\"XXX__deprecated,omitempty\" xml:\"-\"`",
 	}
 
 	for i, expr := range expectedExprs {

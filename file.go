@@ -83,10 +83,18 @@ func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error)
 					areas = append(areas, area)
 				}
 			}
-			if field.Doc == nil {
+
+			comments := []*ast.Comment{}
+
+			if field.Doc != nil {
+				comments = append(comments, field.Doc.List...)
+			} else if field.Comment != nil {
+				comments = append(comments, field.Comment.List...)
+			} else {
 				continue
 			}
-			for _, comment := range field.Doc.List {
+
+			for _, comment := range comments {
 				tag := tagFromComment(comment.Text)
 				if tag == "" {
 					continue

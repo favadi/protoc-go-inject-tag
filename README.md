@@ -7,65 +7,89 @@
 ## Why?
 
 Golang [protobuf](https://github.com/golang/protobuf) doesn't support
-[custom tags to generated structs](https://github.com/golang/protobuf/issues/52). This
-script injects custom tags to generated protobuf files, useful for
-things like validation struct tags.
+[custom tags to generated structs](https://github.com/golang/protobuf/issues/52).
+This tool injects custom tags to generated protobuf files, which is commonly
+used for validating fields, omitting fields from JSON data, etc.
 
 ## Install
 
-* [protobuf version 3](https://github.com/google/protobuf)
+- [protobuf version 3](https://github.com/google/protobuf)
 
   For OS X:
-  
-  ```
-  brew install protobuf
-  ```
-* go support for protobuf: `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
 
-*  `go get github.com/favadi/protoc-go-inject-tag` or download the
-  binaries from releases page.
+  ```console
+  $ brew install protobuf
+  ```
+
+- go support for protobuf: `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
+
+- `go get github.com/favadi/protoc-go-inject-tag` or download the
+  binaries from the releases page.
 
 ## Usage
 
-Add a comment with syntax `// @inject_tag: custom_tag:"custom_value"`
-before fields to add custom tag to in .proto files.
-
-Example:
-
+```console
+$ protoc-go-inject-tag -h
+Usage of protoc-go-inject-tag:
+  -XXX_skip string
+        tags that should be skipped (applies 'tag:"-"') for unknown fields (deprecated since protoc-gen-go v1.4.0)
+  -input string
+        pattern to match input file(s)
+  -verbose
+        verbose logging
 ```
+
+Add a comment with the following syntax before fields, and these will be
+injected into the resulting `.pb.go` file. This can be specified above the
+field, or trailing the field.
+
+```proto
+// @inject_tag: custom_tag:"custom_value"
+```
+
+## Example
+
+```proto
 // file: test.proto
 syntax = "proto3";
 
 package pb;
+option go_package = "/pb";
 
 message IP {
   // @inject_tag: valid:"ip"
   string Address = 1;
+
+  // Or:
+  string MAC = 2; // @inject_tag: validate:"omitempty"
 }
 ```
 
-Generate with protoc command as normal.
+Generate your `.pb.go` files with the protoc command as normal:
 
-```
-protoc --go_out=. test.proto
-```
-
-Run `protoc-go-inject-tag` with generated file `test.pb.go`.
-
-```
-protoc-go-inject-tag -input=./test.pb.go
+```console
+$ protoc --proto_path=. --go_out=paths=source_relative:. test.proto
 ```
 
-The custom tags will be injected to `test.pb.go`.
+Then run `protoc-go-inject-tag` against the generated files (e.g `test.pb.go`):
 
+```console
+$ protoc-go-inject-tag -input=./test.pb.go
+# or
+$ protoc-go-inject-tag -input="*.pb.go"
 ```
+
+The custom tags will be injected to `test.pb.go`:
+
+```go
 type IP struct {
 	// @inject_tag: valid:"ip"
 	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" valid:"ip"`
 }
 ```
 
-To skip the tag for the generated XXX_* fields, use
-`-XXX_skip=yaml,xml` flag.
+To skip the tag for the generated XXX\_\* fields (unknown fields), use the
+`-XXX_skip=yaml,xml` flag. Note that this is deprecated, as this functionality
+hasn't existed in `protoc-gen-go` since v1.4.x.
 
-To enable verbose logging, use `-verbose`
+To enable verbose logging, use `-verbose`.
