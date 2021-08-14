@@ -42,8 +42,8 @@ func TestParseWriteFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(areas) != 8 {
-		t.Fatalf("expected 8 areas to replace, got: %d", len(areas))
+	if len(areas) != 9 {
+		t.Fatalf("expected 9 areas to replace, got: %d", len(areas))
 	}
 	area := areas[0]
 	t.Logf("area: %v", area)
@@ -112,6 +112,7 @@ func TestNewTagItems(t *testing.T) {
 func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	expectedTags := []string{
 		`valid:"ip" yaml:"ip" json:"overrided"`,
+		`valid:"-"`,
 		`valid:"http|https"`,
 		`valid:"nonzero"`,
 		`validate:"omitempty"`,
