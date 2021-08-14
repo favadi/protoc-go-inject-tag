@@ -88,10 +88,16 @@ func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error)
 
 			if field.Doc != nil {
 				comments = append(comments, field.Doc.List...)
-			} else if field.Comment != nil {
+			}
+
+			// The "doc" field (above comment) is more commonly "free-form"
+			// due to the ability to have a much larger comment without it
+			// being unwieldly. As such, the "comment" field (trailing comment),
+			// should take precedence if there happen to be multiple tags
+			// specified, both in the field doc, and the field line. Whichever
+			// comes last, will take precedence.
+			if field.Comment != nil {
 				comments = append(comments, field.Comment.List...)
-			} else {
-				continue
 			}
 
 			for _, comment := range comments {

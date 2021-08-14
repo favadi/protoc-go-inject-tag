@@ -74,8 +74,13 @@ type URL struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// @inject_tag: valid:"http|https"
-	Scheme string `protobuf:"bytes,1,opt,name=scheme,proto3" json:"scheme,omitempty"`
+	// below is an example where the line-specific comment should take precedence
+	// over the "doc" comment, which is known to be more free-form. On the
+	// resulting struct field, you should see `valid:"http|https"` added, not
+	// `valid:"-"`.
+	//
+	// @inject_tag: valid:"-"
+	Scheme string `protobuf:"bytes,1,opt,name=scheme,proto3" json:"scheme,omitempty"` // @inject_tag: valid:"http|https"
 	Url    string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	// @inject_tag: valid:"nonzero"
 	Port int32 `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
