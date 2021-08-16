@@ -7,7 +7,7 @@ import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 
 message IP {
-  string Address = 1; // @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
+  string Address = 1; // @gotags: valid:"ip" yaml:"ip" json:"overrided"
 }
 
 message URL {
@@ -16,10 +16,11 @@ message URL {
   // resulting struct field, you should see `valid:"http|https"` added, not
   // `valid:"-"`.
   //
-  // @inject_tag: valid:"-"
-  string scheme = 1; // @inject_tag: valid:"http|https"
+  // @gotags: valid:"-"
+  string scheme = 1; // @gotags: valid:"http|https"
   string url = 2;
-  // @inject_tag: valid:"nonzero"
+  // Test legacy field name.
+  // @inject_tags: valid:"nonzero"
   int32 port = 3;
 }
 
@@ -28,7 +29,7 @@ service StreamService {
 }
 
 message Params {
-  // @inject_tag: validate:"omitempty"
+  // @gotags: validate:"omitempty"
   string id = 1;
   // gets converted into XXX_Deprecated, for use with testing pre-v1.4.x protoc-gen-go
   // functionality that exposes unknown fields as public.
@@ -36,18 +37,18 @@ message Params {
 }
 
 message Record {
-  // @inject_tag: validate:"omitempty"
+  // @gotags: validate:"omitempty"
   string id = 1;
   google.protobuf.Any test_any = 2;
   google.protobuf.Empty test_empty = 3;
 }
 
 message OneOfObject {
-  // @inject_tag: tag:"foo_bar"
+  // @gotags: tag:"foo_bar"
   oneof foo_bar {
-    // @inject_tag: tag:"foo"
+    // @gotags: tag:"foo"
     string foo = 1;
-    // @inject_tag: tag:"bar"
+    // @gotags: tag:"bar"
     int64 bar = 2;
   }
 }

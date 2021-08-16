@@ -19,13 +19,14 @@ func TestTagFromComment(t *testing.T) {
 		comment string
 		tag     string
 	}{
-		{comment: `//@inject_tag: valid:"abc"`, tag: `valid:"abc"`},
-		{comment: `//   @inject_tag: valid:"abcd"`, tag: `valid:"abcd"`},
-		{comment: `// @inject_tag:      valid:"xyz"`, tag: `valid:"xyz"`},
+		{comment: `//@gotags: valid:"abc"`, tag: `valid:"abc"`},
+		{comment: `//   @gotags: valid:"abcd"`, tag: `valid:"abcd"`},
+		{comment: `// @gotags:      valid:"xyz"`, tag: `valid:"xyz"`},
 		{comment: `// fdsafsa`, tag: ""},
-		{comment: `//@inject_tag:`, tag: ""},
-		{comment: `// @inject_tag: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
-		{comment: `// test @inject_tag: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+		{comment: `//@gotags:`, tag: ""},
+		{comment: `// @gotags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+		{comment: `// test @gotags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+		{comment: `// test @inject_tags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
 	}
 	for _, test := range tests {
 		result := tagFromComment(test.comment)
@@ -46,7 +47,6 @@ func TestParseWriteFile(t *testing.T) {
 		t.Fatalf("expected 9 areas to replace, got: %d", len(areas))
 	}
 	area := areas[0]
-	t.Logf("area: %v", area)
 	if area.InjectTag != expectedTag {
 		t.Errorf("expected tag: %q, got: %q", expectedTag, area.InjectTag)
 	}

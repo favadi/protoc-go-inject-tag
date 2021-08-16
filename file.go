@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	rComment = regexp.MustCompile(`^//.*?@inject_tag:\s*(.*)$`)
+	rComment = regexp.MustCompile(`^//.*?@(?i:gotags?|inject_tags?):\s*(.*)$`)
 	rInject  = regexp.MustCompile("`.+`$")
 	rTags    = regexp.MustCompile(`[\w_]+:"[^"]+"`)
 )
@@ -105,6 +105,11 @@ func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error)
 				if tag == "" {
 					continue
 				}
+
+				if strings.Contains(comment.Text, "inject_tag") {
+					logf("warn: deprecated 'inject_tag' used")
+				}
+
 				currentTag := field.Tag.Value
 				area := textArea{
 					Start:      int(field.Pos()),
