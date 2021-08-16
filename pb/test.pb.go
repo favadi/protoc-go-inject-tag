@@ -27,7 +27,7 @@ type IP struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Address string `protobuf:"bytes,1,opt,name=Address,proto3" json:"Address,omitempty"` // @inject_tag: valid:"ip" yaml:"ip" json:"overrided"
+	Address string `protobuf:"bytes,1,opt,name=Address,proto3" json:"Address,omitempty"` // @gotags: valid:"ip" yaml:"ip" json:"overrided"
 }
 
 func (x *IP) Reset() {
@@ -79,10 +79,11 @@ type URL struct {
 	// resulting struct field, you should see `valid:"http|https"` added, not
 	// `valid:"-"`.
 	//
-	// @inject_tag: valid:"-"
-	Scheme string `protobuf:"bytes,1,opt,name=scheme,proto3" json:"scheme,omitempty"` // @inject_tag: valid:"http|https"
+	// @gotags: valid:"-"
+	Scheme string `protobuf:"bytes,1,opt,name=scheme,proto3" json:"scheme,omitempty"` // @gotags: valid:"http|https"
 	Url    string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
-	// @inject_tag: valid:"nonzero"
+	// Test legacy field name.
+	// @inject_tags: valid:"nonzero"
 	Port int32 `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
 }
 
@@ -144,7 +145,7 @@ type Params struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// @inject_tag: validate:"omitempty"
+	// @gotags: validate:"omitempty"
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// gets converted into XXX_Deprecated, for use with testing pre-v1.4.x protoc-gen-go
 	// functionality that exposes unknown fields as public.
@@ -202,7 +203,7 @@ type Record struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// @inject_tag: validate:"omitempty"
+	// @gotags: validate:"omitempty"
 	Id        string       `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	TestAny   *any.Any     `protobuf:"bytes,2,opt,name=test_any,json=testAny,proto3" json:"test_any,omitempty"`
 	TestEmpty *empty.Empty `protobuf:"bytes,3,opt,name=test_empty,json=testEmpty,proto3" json:"test_empty,omitempty"`
@@ -266,7 +267,7 @@ type OneOfObject struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// @inject_tag: tag:"foo_bar"
+	// @gotags: tag:"foo_bar"
 	//
 	// Types that are assignable to FooBar:
 	//	*OneOfObject_Foo
@@ -332,12 +333,12 @@ type isOneOfObject_FooBar interface {
 }
 
 type OneOfObject_Foo struct {
-	// @inject_tag: tag:"foo"
+	// @gotags: tag:"foo"
 	Foo string `protobuf:"bytes,1,opt,name=foo,proto3,oneof"`
 }
 
 type OneOfObject_Bar struct {
-	// @inject_tag: tag:"bar"
+	// @gotags: tag:"bar"
 	Bar int64 `protobuf:"varint,2,opt,name=bar,proto3,oneof"`
 }
 

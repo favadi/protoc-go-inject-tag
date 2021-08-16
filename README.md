@@ -44,7 +44,7 @@ injected into the resulting `.pb.go` file. This can be specified above the
 field, or trailing the field.
 
 ```proto
-// @inject_tag: custom_tag:"custom_value"
+// @gotags: custom_tag:"custom_value"
 ```
 
 ## Example
@@ -57,11 +57,11 @@ package pb;
 option go_package = "/pb";
 
 message IP {
-  // @inject_tag: valid:"ip"
+  // @gotags: valid:"ip"
   string Address = 1;
 
   // Or:
-  string MAC = 2; // @inject_tag: validate:"omitempty"
+  string MAC = 2; // @gotags: validate:"omitempty"
 }
 ```
 
@@ -83,13 +83,22 @@ The custom tags will be injected to `test.pb.go`:
 
 ```go
 type IP struct {
-	// @inject_tag: valid:"ip"
+	// @gotags: valid:"ip"
 	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" valid:"ip"`
 }
 ```
 
-To skip the tag for the generated XXX\_\* fields (unknown fields), use the
-`-XXX_skip=yaml,xml` flag. Note that this is deprecated, as this functionality
-hasn't existed in `protoc-gen-go` since v1.4.x.
+## Deprecated functionality
 
-To enable verbose logging, use `-verbose`.
+#### Skip `XXX_*` fields
+
+To skip the tag for the generated `XXX_*` fields (unknown fields), use the
+`-XXX_skip=yaml,xml` flag. This is deprecated, as this functionality hasn't
+existed in `protoc-gen-go` since v1.4.x.
+
+#### `inject_tag` keyword
+
+Since **v1.3.0**, we recommend using `@gotags:` rather than `@inject_tags:`,
+as `@gotags` is more indicative of the language the comment is for. We don't
+plan on removing `@inject_tags:` support anytime soon, however we strongly
+recommend switching to `@gotags`.
