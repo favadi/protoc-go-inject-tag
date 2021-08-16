@@ -9,8 +9,7 @@ import (
 )
 
 func main() {
-	var inputFiles string
-	var xxxTags string
+	var inputFiles, xxxTags string
 	flag.StringVar(&inputFiles, "input", "", "pattern to match input file(s)")
 	flag.StringVar(&xxxTags, "XXX_skip", "", "tags that should be skipped (applies 'tag:\"-\"') for unknown fields (deprecated since protoc-gen-go v1.4.0)")
 	flag.BoolVar(&verbose, "verbose", false, "verbose logging")
@@ -18,6 +17,7 @@ func main() {
 
 	var xxxSkipSlice []string
 	if len(xxxTags) > 0 {
+		logf("warn: deprecated flag '-XXX_skip' used")
 		xxxSkipSlice = strings.Split(xxxTags, ",")
 	}
 
