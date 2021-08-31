@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func itemsCmp(items1 tagItems, items2 tagItems) bool  {
 	if len(items1) != len(items2) {
@@ -60,11 +62,7 @@ func TestParseTag(t *testing.T) {
 	}
 
 	for i, v := range tags {
-		items, err := parseTag(v)
-		if err != nil {
-			t.Error(err)
-			break
-		}
+		items := parseTag(v)
 		if !itemsCmp(items, ans[i]) {
 			t.Error("parsetag error", items, ans[i])
 			break

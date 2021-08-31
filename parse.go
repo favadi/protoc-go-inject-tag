@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -22,7 +21,7 @@ type tagItem struct {
 type tagItems []tagItem
 
 //copy from reflect/type.go
-func parseTag(tag string) (tagItems, error) {
+func parseTag(tag string) tagItems {
 	ans := tagItems{}
 
 	for tag != "" {
@@ -72,7 +71,7 @@ func parseTag(tag string) (tagItems, error) {
 		})
 	}
 
-	return ans, nil
+	return ans
 }
 
 func (ti tagItems) format() string {
@@ -104,11 +103,7 @@ func (ti tagItems) override(nti tagItems) tagItems {
 }
 
 func newTagItems(tag string) tagItems {
-	items, err := parseTag(tag)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return items
+	return parseTag(tag)
 }
 
 func injectTag(contents []byte, area textArea) (injected []byte) {
