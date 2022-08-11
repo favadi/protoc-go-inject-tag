@@ -62,15 +62,35 @@ func newTagItems(tag string) tagItems {
 	return items
 }
 
-func injectTag(contents []byte, area textArea) (injected []byte) {
+func injectTag(contents []byte, area textArea, clearTagCommon bool) (injected []byte) {
 	expr := make([]byte, area.End-area.Start)
 	copy(expr, contents[area.Start-1:area.End-1])
 	cti := newTagItems(area.CurrentTag)
 	iti := newTagItems(area.InjectTag)
 	ti := cti.override(iti)
 	expr = rInject.ReplaceAll(expr, []byte(fmt.Sprintf("`%s`", ti.format())))
-	injected = append(injected, contents[:area.Start-1]...)
-	injected = append(injected, expr...)
-	injected = append(injected, contents[area.End-1:]...)
+	if clearTagCommon {
+		black := make([]byte, area.CommentEnd-area.CommentStart)
+		copy(black, contents[area.CommentStart-1:area.CommentEnd-1])
+		black = rAll.ReplaceAll(expr, []byte(" "))
+		if area.CommentStart < area.Start {
+			injected = append(injected, contents[:area.CommentStart-1]...)
+			injected = append(injected, black...)
+			injected = append(injected, contents[area.CommentEnd-1:area.Start-1]...)
+			injected = append(injected, expr...)
+			injected = append(injected, contents[area.End-1:]...)
+		} else {
+			injected = append(injected, contents[:area.Start-1]...)
+			injected = append(injected, expr...)
+			injected = append(injected, contents[area.End-1:area.CommentStart-1]...)
+			injected = append(injected, black...)
+			injected = append(injected, contents[area.CommentEnd-1:]...)
+		}
+	} else {
+		injected = append(injected, contents[:area.Start-1]...)
+		injected = append(injected, expr...)
+		injected = append(injected, contents[area.End-1:]...)
+	}
+
 	return
 }

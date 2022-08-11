@@ -15,13 +15,16 @@ var (
 	rComment = regexp.MustCompile(`^//.*?@(?i:gotags?|inject_tags?):\s*(.*)$`)
 	rInject  = regexp.MustCompile("`.+`$")
 	rTags    = regexp.MustCompile(`[\w_]+:"[^"]+"`)
+	rAll     = regexp.MustCompile(".*")
 )
 
 type textArea struct {
-	Start      int
-	End        int
-	CurrentTag string
-	InjectTag  string
+	Start        int
+	End          int
+	CurrentTag   string
+	InjectTag    string
+	CommentStart int
+	CommentEnd   int
 }
 
 func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error) {
@@ -112,10 +115,12 @@ func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error)
 
 				currentTag := field.Tag.Value
 				area := textArea{
-					Start:      int(field.Pos()),
-					End:        int(field.End()),
-					CurrentTag: currentTag[1 : len(currentTag)-1],
-					InjectTag:  tag,
+					Start:        int(field.Pos()),
+					End:          int(field.End()),
+					CurrentTag:   currentTag[1 : len(currentTag)-1],
+					InjectTag:    tag,
+					CommentStart: int(comment.Pos()),
+					CommentEnd:   int(comment.End()),
 				}
 				areas = append(areas, area)
 			}
@@ -125,7 +130,7 @@ func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error)
 	return
 }
 
-func writeFile(inputPath string, areas []textArea) (err error) {
+func writeFile(inputPath string, areas []textArea, clearTagCommon bool) (err error) {
 	f, err := os.Open(inputPath)
 	if err != nil {
 		return
@@ -144,7 +149,7 @@ func writeFile(inputPath string, areas []textArea) (err error) {
 	for i := range areas {
 		area := areas[len(areas)-i-1]
 		logf("inject custom tag %q to expression %q", area.InjectTag, string(contents[area.Start-1:area.End-1]))
-		contents = injectTag(contents, area)
+		contents = injectTag(contents, area, clearTagCommon)
 	}
 	if err = ioutil.WriteFile(inputPath, contents, 0644); err != nil {
 		return

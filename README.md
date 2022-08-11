@@ -37,6 +37,8 @@ Usage of protoc-go-inject-tag:
         pattern to match input file(s)
   -verbose
         verbose logging
+  -clear_tag_comment
+        clear tag comment
 ```
 
 Add a comment with the following syntax before fields, and these will be
@@ -102,3 +104,4 @@ Since **v1.3.0**, we recommend using `@gotags:` rather than `@inject_tags:`,
 as `@gotags` is more indicative of the language the comment is for. We don't
 plan on removing `@inject_tags:` support anytime soon, however we strongly
 recommend switching to `@gotags`.
+
