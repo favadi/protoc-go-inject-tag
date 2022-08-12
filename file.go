@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
+	"io"
 	"os"
 	"regexp"
 	"strings"
@@ -95,7 +95,7 @@ func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error)
 
 			// The "doc" field (above comment) is more commonly "free-form"
 			// due to the ability to have a much larger comment without it
-			// being unwieldly. As such, the "comment" field (trailing comment),
+			// being unwieldy. As such, the "comment" field (trailing comment),
 			// should take precedence if there happen to be multiple tags
 			// specified, both in the field doc, and the field line. Whichever
 			// comes last, will take precedence.
@@ -136,7 +136,7 @@ func writeFile(inputPath string, areas []textArea, removeTagComment bool) (err e
 		return
 	}
 
-	contents, err := ioutil.ReadAll(f)
+	contents, err := io.ReadAll(f)
 	if err != nil {
 		return
 	}
@@ -151,7 +151,7 @@ func writeFile(inputPath string, areas []textArea, removeTagComment bool) (err e
 		logf("inject custom tag %q to expression %q", area.InjectTag, string(contents[area.Start-1:area.End-1]))
 		contents = injectTag(contents, area, removeTagComment)
 	}
-	if err = ioutil.WriteFile(inputPath, contents, 0o644); err != nil {
+	if err = os.WriteFile(inputPath, contents, 0o644); err != nil {
 		return
 	}
 

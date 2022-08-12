@@ -24,7 +24,7 @@ func main() {
 		xxxSkipSlice = strings.Split(xxxTags, ",")
 	}
 
-	if len(inputFiles) == 0 {
+	if inputFiles == "" {
 		log.Fatal("input file is mandatory, see: -help")
 	}
 

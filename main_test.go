@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
@@ -52,11 +51,11 @@ func TestParseWriteFile(t *testing.T) {
 	}
 
 	// make a copy of test file
-	contents, err := ioutil.ReadFile(testInputFile)
+	contents, err := os.ReadFile(testInputFile)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = ioutil.WriteFile(testInputFileTemp, contents, 0644); err != nil {
+	if err = os.WriteFile(testInputFileTemp, contents, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	defer os.Remove(testInputFileTemp)
@@ -74,7 +73,7 @@ func TestParseWriteFile(t *testing.T) {
 	}
 
 	// check if file contains custom tag
-	contents, err = ioutil.ReadFile(testInputFileTemp)
+	contents, err = os.ReadFile(testInputFileTemp)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,11 +101,11 @@ func TestParseWriteFileClearCommon(t *testing.T) {
 	}
 
 	// make a copy of test file
-	contents, err := ioutil.ReadFile(testInputFile)
+	contents, err := os.ReadFile(testInputFile)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = ioutil.WriteFile(testInputFileTemp, contents, 0644); err != nil {
+	if err = os.WriteFile(testInputFileTemp, contents, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	defer os.Remove(testInputFileTemp)
@@ -123,7 +122,7 @@ func TestParseWriteFileClearCommon(t *testing.T) {
 	}
 
 	// check if file contains custom tag
-	contents, err = ioutil.ReadFile(testInputFileTemp)
+	contents, err = os.ReadFile(testInputFileTemp)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -196,11 +195,11 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	}
 
 	// make a copy of test file
-	contents, err := ioutil.ReadFile(testInputFile)
+	contents, err := os.ReadFile(testInputFile)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = ioutil.WriteFile(testInputFileTemp, contents, 0644); err != nil {
+	if err = os.WriteFile(testInputFileTemp, contents, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	defer os.Remove(testInputFileTemp)
@@ -210,7 +209,7 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	}
 
 	// check if file contains custom tags
-	contents, err = ioutil.ReadFile(testInputFileTemp)
+	contents, err = os.ReadFile(testInputFileTemp)
 	if err != nil {
 		t.Fatal(err)
 	}
