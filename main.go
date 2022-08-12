@@ -53,7 +53,7 @@ func main() {
 
 		matched++
 
-		areas, err := parseFile(path, xxxSkipSlice)
+		areas, err := parseFile(path, nil, xxxSkipSlice)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -13,32 +13,60 @@ var (
 	testInputFileTemp = "./pb/test.pb.go_tmp"
 )
 
-func TestTagFromComment(t *testing.T) {
-	var tests = []struct {
-		comment string
-		tag     string
-	}{
-		{comment: `//@gotags: valid:"abc"`, tag: `valid:"abc"`},
-		{comment: `//   @gotags: valid:"abcd"`, tag: `valid:"abcd"`},
-		{comment: `// @gotags:      valid:"xyz"`, tag: `valid:"xyz"`},
-		{comment: `// fdsafsa`, tag: ""},
-		{comment: `//@gotags:`, tag: ""},
-		{comment: `// @gotags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
-		{comment: `// test @gotags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
-		{comment: `// test @inject_tags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+var testsTagFromComment = []struct {
+	comment string
+	tag     string
+}{
+	{comment: `//@gotags: valid:"abc"`, tag: `valid:"abc"`},
+	{comment: `//   @gotags: valid:"abcd"`, tag: `valid:"abcd"`},
+	{comment: `// @gotags:      valid:"xyz"`, tag: `valid:"xyz"`},
+	{comment: `// fdsafsa`, tag: ""},
+	{comment: `//@gotags:`, tag: ""},
+	{comment: `// @gotags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+	{comment: `// test @gotags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+	{comment: `// test @inject_tags: json:"abc" yaml:"abc`, tag: `json:"abc" yaml:"abc`},
+}
+
+func FuzzTagFromComment(f *testing.F) {
+	for _, test := range testsTagFromComment {
+		f.Add(test.comment)
 	}
-	for _, test := range tests {
-		result := tagFromComment(test.comment)
-		if result != test.tag {
+
+	f.Fuzz(func(t *testing.T, orig string) {
+		_ = tagFromComment(orig)
+	})
+}
+
+func TestTagFromComment(t *testing.T) {
+	for _, test := range testsTagFromComment {
+		if result := tagFromComment(test.comment); result != test.tag {
 			t.Errorf("expected tag: %q, got: %q", test.tag, result)
 		}
 	}
 }
 
+func FuzzParseWriteFile(f *testing.F) {
+	contents, err := os.ReadFile(testInputFile)
+	if err != nil {
+		f.Fatal(err)
+	}
+
+	f.Add(contents)
+	f.Fuzz(func(t *testing.T, orig []byte) {
+		areas, err := parseFile("placeholder.pb.go", orig, nil)
+		if err == nil {
+			for _, area := range areas {
+				_ = injectTag(orig, area, false) // Test without annotation removal.
+				_ = injectTag(orig, area, true)  // Test with annotation removal.
+			}
+		}
+	})
+}
+
 func TestParseWriteFile(t *testing.T) {
 	expectedTag := `valid:"ip" yaml:"ip" json:"overrided"`
 
-	areas, err := parseFile(testInputFile, []string{})
+	areas, err := parseFile(testInputFile, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +92,7 @@ func TestParseWriteFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	newAreas, err := parseFile(testInputFileTemp, []string{})
+	newAreas, err := parseFile(testInputFileTemp, nil, nil)
 	if len(newAreas) != len(areas) {
 		t.Errorf("the comment tag has error")
 	}
@@ -88,7 +116,7 @@ func TestParseWriteFile(t *testing.T) {
 func TestParseWriteFileClearCommon(t *testing.T) {
 	expectedTag := `valid:"ip" yaml:"ip" json:"overrided"`
 
-	areas, err := parseFile(testInputFile, []string{})
+	areas, err := parseFile(testInputFile, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -113,7 +141,7 @@ func TestParseWriteFileClearCommon(t *testing.T) {
 	if err = writeFile(testInputFileTemp, areas, true); err != nil {
 		t.Fatal(err)
 	}
-	newAreas, err := parseFile(testInputFileTemp, []string{})
+	newAreas, err := parseFile(testInputFileTemp, nil, nil)
 	if newAreas != nil {
 		t.Errorf("not clear tag")
 	}
@@ -134,28 +162,38 @@ func TestParseWriteFileClearCommon(t *testing.T) {
 	}
 }
 
-func TestNewTagItems(t *testing.T) {
-	var tests = []struct {
-		tag   string
-		items tagItems
-	}{
-		{
-			tag: `valid:"ip" yaml:"ip, required" json:"overrided"`,
-			items: []tagItem{
-				{key: "valid", value: `"ip"`},
-				{key: "yaml", value: `"ip, required"`},
-				{key: "json", value: `"overrided"`},
-			},
+var testsNewTagItems = []struct {
+	tag   string
+	items tagItems
+}{
+	{
+		tag: `valid:"ip" yaml:"ip, required" json:"overrided"`,
+		items: []tagItem{
+			{key: "valid", value: `"ip"`},
+			{key: "yaml", value: `"ip, required"`},
+			{key: "json", value: `"overrided"`},
 		},
-		{
-			tag: `validate:"omitempty,oneof=a b c d"`,
-			items: []tagItem{
-				{key: "validate", value: `"omitempty,oneof=a b c d"`},
-			},
+	},
+	{
+		tag: `validate:"omitempty,oneof=a b c d"`,
+		items: []tagItem{
+			{key: "validate", value: `"omitempty,oneof=a b c d"`},
 		},
+	},
+}
+
+func FuzzNewTagItems(f *testing.F) {
+	for _, test := range testsNewTagItems {
+		f.Add(test.tag)
 	}
 
-	for _, test := range tests {
+	f.Fuzz(func(t *testing.T, orig string) {
+		_ = newTagItems(orig)
+	})
+}
+
+func TestNewTagItems(t *testing.T) {
+	for _, test := range testsNewTagItems {
 		for i, item := range newTagItems(test.tag) {
 			if item.key != test.items[i].key || item.value != test.items[i].value {
 				t.Errorf("wrong tag item for tag %s, expected %v, got: %v",
@@ -179,7 +217,7 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 		`tag:"bar"`,
 	}
 
-	areas, err := parseFile(testInputFile, []string{"xml"})
+	areas, err := parseFile(testInputFile, nil, []string{"xml"})
 	if err != nil {
 		t.Fatal(err)
 	}
