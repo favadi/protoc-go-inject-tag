@@ -130,7 +130,7 @@ func parseFile(inputPath string, xxxSkip []string) (areas []textArea, err error)
 	return
 }
 
-func writeFile(inputPath string, areas []textArea, clearTagCommon bool) (err error) {
+func writeFile(inputPath string, areas []textArea, removeTagComment bool) (err error) {
 	f, err := os.Open(inputPath)
 	if err != nil {
 		return
@@ -149,9 +149,9 @@ func writeFile(inputPath string, areas []textArea, clearTagCommon bool) (err err
 	for i := range areas {
 		area := areas[len(areas)-i-1]
 		logf("inject custom tag %q to expression %q", area.InjectTag, string(contents[area.Start-1:area.End-1]))
-		contents = injectTag(contents, area, clearTagCommon)
+		contents = injectTag(contents, area, removeTagComment)
 	}
-	if err = ioutil.WriteFile(inputPath, contents, 0644); err != nil {
+	if err = ioutil.WriteFile(inputPath, contents, 0o644); err != nil {
 		return
 	}
 
