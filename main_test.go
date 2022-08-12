@@ -61,7 +61,64 @@ func TestParseWriteFile(t *testing.T) {
 	}
 	defer os.Remove(testInputFileTemp)
 
-	if err = writeFile(testInputFileTemp, areas); err != nil {
+	if err = writeFile(testInputFileTemp, areas, false); err != nil {
+		t.Fatal(err)
+	}
+
+	newAreas, err := parseFile(testInputFileTemp, []string{})
+	if len(newAreas) != len(areas) {
+		t.Errorf("the comment tag has error")
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// check if file contains custom tag
+	contents, err = ioutil.ReadFile(testInputFileTemp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expectedExpr := "Address[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=Address,proto3\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`"
+	matched, err := regexp.Match(expectedExpr, contents)
+	if err != nil || matched != true {
+		t.Error("file doesn't contains custom tag after writing")
+		t.Log(string(contents))
+	}
+}
+
+func TestParseWriteFileClearCommon(t *testing.T) {
+	expectedTag := `valid:"ip" yaml:"ip" json:"overrided"`
+
+	areas, err := parseFile(testInputFile, []string{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(areas) != 9 {
+		t.Fatalf("expected 9 areas to replace, got: %d", len(areas))
+	}
+	area := areas[0]
+	if area.InjectTag != expectedTag {
+		t.Errorf("expected tag: %q, got: %q", expectedTag, area.InjectTag)
+	}
+
+	// make a copy of test file
+	contents, err := ioutil.ReadFile(testInputFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = ioutil.WriteFile(testInputFileTemp, contents, 0644); err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(testInputFileTemp)
+
+	if err = writeFile(testInputFileTemp, areas, true); err != nil {
+		t.Fatal(err)
+	}
+	newAreas, err := parseFile(testInputFileTemp, []string{})
+	if newAreas != nil {
+		t.Errorf("not clear tag")
+	}
+	if err != nil {
 		t.Fatal(err)
 	}
 
@@ -148,7 +205,7 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 	}
 	defer os.Remove(testInputFileTemp)
 
-	if err = writeFile(testInputFileTemp, areas); err != nil {
+	if err = writeFile(testInputFileTemp, areas, false); err != nil {
 		t.Fatal(err)
 	}
 
