@@ -18,7 +18,7 @@ used for validating fields, omitting fields from JSON data, etc.
   For OS X:
 
   ```console
-  $ brew install protobuf
+  brew install protobuf
   ```
 
 - go support for protobuf: `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
@@ -37,8 +37,8 @@ Usage of protoc-go-inject-tag:
         pattern to match input file(s)
   -verbose
         verbose logging
-  -clear_tag_comment
-        clear tag comment
+  -remove_tag_comment
+        removes tag comments from the generated file(s)
 ```
 
 Add a comment with the following syntax before fields, and these will be
@@ -70,7 +70,7 @@ message IP {
 Generate your `.pb.go` files with the protoc command as normal:
 
 ```console
-$ protoc --proto_path=. --go_out=paths=source_relative:. test.proto
+protoc --proto_path=. --go_out=paths=source_relative:. test.proto
 ```
 
 Then run `protoc-go-inject-tag` against the generated files (e.g `test.pb.go`):
@@ -85,14 +85,21 @@ The custom tags will be injected to `test.pb.go`:
 
 ```go
 type IP struct {
-	// @gotags: valid:"ip"
-	Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" valid:"ip"`
+ // @gotags: valid:"ip"
+ Address string `protobuf:"bytes,1,opt,name=Address,json=address" json:"Address,omitempty" valid:"ip"`
 }
 ```
 
+## Remove gotag comments from generated output
+
+Utilizing the `-remove-tag-comment` flag, you can remove the gotag comment that
+is normally annotated to the generated code. This allows more seamless support with
+libraries like swag/openapi generators that use code comments to generate openapi
+files.
+
 ## Deprecated functionality
 
-#### Skip `XXX_*` fields
+### Skip `XXX_*` fields
 
 To skip the tag for the generated `XXX_*` fields (unknown fields), use the
 `-XXX_skip=yaml,xml` flag. This is deprecated, as this functionality hasn't
@@ -104,4 +111,3 @@ Since **v1.3.0**, we recommend using `@gotags:` rather than `@inject_tags:`,
 as `@gotags` is more indicative of the language the comment is for. We don't
 plan on removing `@inject_tags:` support anytime soon, however we strongly
 recommend switching to `@gotags`.
-
