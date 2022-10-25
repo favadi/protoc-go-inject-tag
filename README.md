@@ -92,7 +92,7 @@ type IP struct {
 
 ## Remove gotag comments from generated output
 
-Utilizing the `-remove-tag-comment` flag, you can remove the gotag comment that
+Utilizing the `-remove_tag_comment` flag, you can remove the gotag comment that
 is normally annotated to the generated code. This allows more seamless support with
 libraries like swag/openapi generators that use code comments to generate openapi
 files.
