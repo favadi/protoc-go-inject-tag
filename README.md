@@ -23,7 +23,7 @@ used for validating fields, omitting fields from JSON data, etc.
 
 - go support for protobuf: `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
 
-- `go install github.com/favadi/protoc-go-inject-tag` or download the
+- `go install github.com/favadi/protoc-go-inject-tag@latest` or download the
   binaries from the releases page.
 
 ## Usage
