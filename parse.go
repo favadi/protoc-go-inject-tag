@@ -20,6 +20,60 @@ type tagItem struct {
 
 type tagItems []tagItem
 
+//copy from reflect/type.go
+func parseTag(tag string) tagItems {
+	ans := tagItems{}
+
+	for tag != "" {
+		// Skip leading space.
+		i := 0
+		for i < len(tag) && tag[i] == ' ' {
+			i++
+		}
+		tag = tag[i:]
+		if tag == "" {
+			break
+		}
+
+		// Scan to colon. A space, a quote or a control character is a syntax error.
+		// Strictly speaking, control chars include the range [0x7f, 0x9f], not just
+		// [0x00, 0x1f], but in practice, we ignore the multi-byte control characters
+		// as it is simpler to inspect the tag's bytes than the tag's runes.
+		i = 0
+		for i < len(tag) && tag[i] > ' ' && tag[i] != ':' && tag[i] != '"' && tag[i] != 0x7f {
+			i++
+		}
+		if i == 0 || i+1 >= len(tag) || tag[i] != ':' || tag[i+1] != '"' {
+			break
+		}
+		name := string(tag[:i])
+		tag = tag[i+1:]
+
+		// Scan quoted string to find value.
+		i = 1
+		for i < len(tag) && tag[i] != '"' {
+			if tag[i] == '\\' {
+				i++
+			}
+			i++
+		}
+		if i >= len(tag) {
+			break
+		}
+
+		//different from reflect/type.go
+		value := string(tag[:i+1])
+		tag = tag[i+1:]
+
+		ans = append(ans, tagItem{
+			key:   name,
+			value: value,
+		})
+	}
+
+	return ans
+}
+
 func (ti tagItems) format() string {
 	tags := []string{}
 	for _, item := range ti {
@@ -49,17 +103,7 @@ func (ti tagItems) override(nti tagItems) tagItems {
 }
 
 func newTagItems(tag string) tagItems {
-	items := []tagItem{}
-	splitted := rTags.FindAllString(tag, -1)
-
-	for _, t := range splitted {
-		sepPos := strings.Index(t, ":")
-		items = append(items, tagItem{
-			key:   t[:sepPos],
-			value: t[sepPos+1:],
-		})
-	}
-	return items
+	return parseTag(tag)
 }
 
 func injectTag(contents []byte, area textArea, removeTagComment bool) (injected []byte) {
