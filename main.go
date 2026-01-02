@@ -4,8 +4,9 @@ import (
 	"flag"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
+
+	"github.com/bmatcuk/doublestar/v4"
 )
 
 func main() {
@@ -28,9 +29,7 @@ func main() {
 		log.Fatal("input file is mandatory, see: -help")
 	}
 
-	// Note: glob doesn't handle ** (treats as just one *). This will return
-	// files and folders, so we'll have to filter them out.
-	globResults, err := filepath.Glob(inputFiles)
+	globResults, err := doublestar.FilepathGlob(inputFiles, doublestar.WithFilesOnly())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,11 +40,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		if finfo.IsDir() {
-			continue
-		}
-
+		
 		// It should end with ".go" at a minimum.
 		if !strings.HasSuffix(strings.ToLower(finfo.Name()), ".go") {
 			continue
