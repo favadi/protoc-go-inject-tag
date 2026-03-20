@@ -33,6 +33,10 @@ $ protoc-go-inject-tag -h
 Usage of protoc-go-inject-tag:
   -XXX_skip string
         tags that should be skipped (applies 'tag:"-"') for unknown fields (deprecated since protoc-gen-go v1.4.0)
+  -default_tag value
+        default tag to inject into every protobuf field (repeatable); supports placeholders: {{field_snake_case}}, {{field_camelCase}}, {{field_PascalCase}}, {{field_UPPER_SNAKE_CASE}}, {{field_kebab_case}}, {{tag_json_name}}
+  -default_tag_inject_type string
+        where default tags are placed relative to existing tags: prepend or append (default "append")
   -input string
         pattern to match input file(s)
   -verbose
@@ -96,6 +100,45 @@ Utilizing the `-remove_tag_comment` flag, you can remove the gotag comment that
 is normally annotated to the generated code. This allows more seamless support with
 libraries like swag/openapi generators that use code comments to generate openapi
 files.
+
+## Default tags
+
+Use `-default_tag` to inject a tag into **every** protobuf business field globally,
+without adding per-field `@gotags` comments. The flag is repeatable.
+
+```console
+$ protoc-go-inject-tag -input="./pb/*.pb.go" -default_tag='validate:"required"' -default_tag='yaml:"{{field_snake_case}}"'
+```
+
+### Placeholders
+
+The tag value supports placeholders derived from the field name and its existing `json` tag:
+
+| Placeholder | Example (field: `UserName`) |
+|---|---|
+| `{{field_snake_case}}` | `user_name` |
+| `{{field_camelCase}}` | `userName` |
+| `{{field_PascalCase}}` | `UserName` |
+| `{{field_UPPER_SNAKE_CASE}}` | `USER_NAME` |
+| `{{field_kebab_case}}` | `user-name` |
+| `{{tag_json_name}}` | value from existing `json:"..."` tag |
+
+If `{{tag_json_name}}` is used on a field that has no `json` tag, the entry is silently skipped for that field.
+
+### Inject position
+
+Use `-default_tag_inject_type` to control where default tags are placed relative to existing tags:
+
+```console
+# Place default tags before existing tags
+$ protoc-go-inject-tag -input="./pb/*.pb.go" -default_tag='validate:"required"' -default_tag_inject_type=prepend
+```
+
+Default is `append`.
+
+### Priority
+
+Default tags are **lowest priority**: if a field already has the same tag key (via its struct tag or a `@gotags` comment), the existing value is preserved and the default is not applied.
 
 ## Deprecated functionality
 
