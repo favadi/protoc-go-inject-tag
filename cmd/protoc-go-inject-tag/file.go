@@ -76,14 +76,16 @@ func parseFile(inputPath string, src interface{}, xxxSkip []string) (areas []tex
 			if len(field.Names) > 0 {
 				name := field.Names[0].Name
 				if len(xxxSkip) > 0 && strings.HasPrefix(name, "XXX") {
-					currentTag := field.Tag.Value
-					area := textArea{
-						Start:      int(field.Pos()),
-						End:        int(field.End()),
-						CurrentTag: currentTag[1 : len(currentTag)-1],
-						InjectTag:  builder.String(),
+					if field.Tag != nil {
+						currentTag := field.Tag.Value
+						area := textArea{
+							Start:      int(field.Pos()),
+							End:        int(field.End()),
+							CurrentTag: currentTag[1 : len(currentTag)-1],
+							InjectTag:  builder.String(),
+						}
+						areas = append(areas, area)
 					}
-					areas = append(areas, area)
 				}
 			}
 
@@ -113,16 +115,18 @@ func parseFile(inputPath string, src interface{}, xxxSkip []string) (areas []tex
 					logf("warn: deprecated 'inject_tag' used")
 				}
 
-				currentTag := field.Tag.Value
-				area := textArea{
-					Start:        int(field.Pos()),
-					End:          int(field.End()),
-					CurrentTag:   currentTag[1 : len(currentTag)-1],
-					InjectTag:    tag,
-					CommentStart: int(comment.Pos()),
-					CommentEnd:   int(comment.End()),
+				if field.Tag != nil {
+					currentTag := field.Tag.Value
+					area := textArea{
+						Start:        int(field.Pos()),
+						End:          int(field.End()),
+						CurrentTag:   currentTag[1 : len(currentTag)-1],
+						InjectTag:    tag,
+						CommentStart: int(comment.Pos()),
+						CommentEnd:   int(comment.End()),
+					}
+					areas = append(areas, area)
 				}
-				areas = append(areas, area)
 			}
 		}
 	}

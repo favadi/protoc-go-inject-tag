@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	testInputFile     = "./pb/test.pb.go"
-	testInputFileTemp = "./pb/test.pb.go_tmp"
+	testInputFile     = "../../pb/test.pb.go"
+	testInputFileTemp = "../../pb/test.pb.go_tmp"
 )
 
 var testsTagFromComment = []struct {
