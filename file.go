@@ -131,6 +131,10 @@ func parseFile(inputPath string, src interface{}, xxxSkip []string) (areas []tex
 }
 
 func writeFile(inputPath string, areas []textArea, removeTagComment bool) (err error) {
+	return writeFileTo(inputPath, inputPath, areas, removeTagComment)
+}
+
+func writeFileTo(inputPath, outputPath string, areas []textArea, removeTagComment bool) (err error) {
 	f, err := os.Open(inputPath)
 	if err != nil {
 		return
@@ -151,12 +155,12 @@ func writeFile(inputPath string, areas []textArea, removeTagComment bool) (err e
 		logf("inject custom tag %q to expression %q", area.InjectTag, string(contents[area.Start-1:area.End-1]))
 		contents = injectTag(contents, area, removeTagComment)
 	}
-	if err = os.WriteFile(inputPath, contents, 0o644); err != nil {
+	if err = os.WriteFile(outputPath, contents, 0o644); err != nil {
 		return
 	}
 
 	if len(areas) > 0 {
-		logf("file %q is injected with custom tags", inputPath)
+		logf("file %q is injected with custom tags", outputPath)
 	}
 	return
 }

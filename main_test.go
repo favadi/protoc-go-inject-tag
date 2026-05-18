@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"testing"
 )
@@ -110,6 +111,42 @@ func TestParseWriteFile(t *testing.T) {
 	if err != nil || matched != true {
 		t.Error("file doesn't contains custom tag after writing")
 		t.Log(string(contents))
+	}
+}
+
+func TestParseWriteFileTo(t *testing.T) {
+	areas, err := parseFile(testInputFile, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	original, err := os.ReadFile(testInputFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	outputPath := filepath.Join(t.TempDir(), filepath.Base(testInputFile))
+	if err = writeFileTo(testInputFile, outputPath, areas, false); err != nil {
+		t.Fatal(err)
+	}
+
+	after, err := os.ReadFile(testInputFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(original, after) {
+		t.Fatal("input file was modified")
+	}
+
+	written, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expectedExpr := "Address[ \t]+string[ \t]+`protobuf:\"bytes,1,opt,name=Address,proto3\" json:\"overrided\" valid:\"ip\" yaml:\"ip\"`"
+	matched, err := regexp.Match(expectedExpr, written)
+	if err != nil || !matched {
+		t.Error("output file doesn't contain custom tag")
+		t.Log(string(written))
 	}
 }
 
